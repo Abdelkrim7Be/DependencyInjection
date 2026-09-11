@@ -12,7 +12,7 @@
 
 This is a small educational proof of concept built while getting familiar with Java and Spring. It uses one `IDao` interface and one `IMetier` service to compare four ways of assembling the same application.
 
-![Console output](docs/screenshots/console-output.png)
+![Console output](docs/screenshots/console-output-cropped.png)
 
 ## What I am learning
 
@@ -63,4 +63,3 @@ src/main/java/
 ## License
 
 This project is available under the [MIT License](LICENSE).
-
