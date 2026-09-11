@@ -1,148 +1,66 @@
-# Dependency Injection Demo Project
+<div align="center">
 
-This project demonstrates different approaches to Dependency Injection (DI) in Java applications, including a sample banking application pattern.
+# Dependency Injection Demo
 
-## Project Overview
+### A small Java project for learning dependency injection with Spring
 
-This application demonstrates how to implement the Dependency Injection pattern using different techniques:
+[![Java 21](https://img.shields.io/badge/Java-21-orange?logo=openjdk)](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
+[![Spring 6.2.4](https://img.shields.io/badge/Spring-6.2.4-6db33f?logo=spring)](https://spring.io/projects/spring-framework)
+[![License MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-1. **Static Dependency Injection** - Hard-coded dependencies
-2. **Dynamic Dependency Injection** - Runtime dependency resolution
-3. **Spring XML Configuration-based Dependency Injection**
-4. **Spring Annotation-based Dependency Injection**
+</div>
 
-## Core Components
+This is a small educational proof of concept built while getting familiar with Java and Spring. It uses one `IDao` interface and one `IMetier` service to compare four ways of assembling the same application.
 
-### Interfaces
+![Console output](docs/screenshots/console-output.png)
 
-- **IDao** - Data Access Object interface with `getData()` method
-- **IMetier** - Business layer interface with `calcul()` method
+## What I am learning
 
-### Implementations
+| Example | Wiring style | Where to look |
+| --- | --- | --- |
+| Static | Dependencies created directly in Java | `PresentationV1` |
+| Dynamic | Classes loaded from `config.txt` with reflection | `PresentationV2` |
+| Spring XML | Setter injection from `config.xml` | `PresAvecSpringXML` |
+| Spring annotations | Component scanning and setter injection | `PresAvecSpringAnnotations` |
 
-- **DaoImpl** - Database implementation of IDao (returns 23)
-- **DaoImplV2** - Web Service implementation of IDao (returns 11)
-- **MetierImpl** - Business logic implementation, consumes IDao
+The data access implementations return different values so the result makes the selected dependency visible:
 
-## Dependency Injection Methods
+- `DaoImpl` represents a database implementation and returns `23`, producing `529`.
+- `DaoImplV2` represents a web service implementation and returns `11`, producing `253`.
 
-### 1. Static Dependency Injection
+The business layer multiplies the DAO value by `23`. The same `IMetier` contract works with either implementation, which is the main idea behind loose coupling.
 
-The class `PresentationV1` demonstrates static injection by directly instantiating dependencies.
+## Run it
 
-```java
-DaoImplV2 dao = new DaoImplV2();
-MetierImpl metier = new MetierImpl(dao); // Constructor injection
+You need Java 21 and Maven installed.
+
+```bash
+mvn clean compile
 ```
 
-Advantages:
+Run any example from the project root:
 
-- Simple to implement
-- Easy to understand
-
-Disadvantages:
-
-- Hard-coded dependencies
-- Difficult to test and maintain
-- Changes require recompilation
-
-### 2. Dynamic Dependency Injection
-
-The class `PresentationV2` demonstrates dynamic injection using reflection.
-
-```java
-// Read class names from config.txt
-String daoClassName = scanner.nextLine();
-Class cDao = Class.forName(daoClassName);
-IDao dao = (IDao) cDao.getConstructor().newInstance();
+```bash
+mvn exec:java -Dexec.mainClass=presentation.PresentationV1
+mvn exec:java -Dexec.mainClass=presentation.PresentationV2
+mvn exec:java -Dexec.mainClass=presentation.PresAvecSpringXML
+mvn exec:java -Dexec.mainClass=presentation.PresAvecSpringAnnotations
 ```
 
-Advantages:
+The dynamic example reads the implementation class names from `config.txt`. The XML example reads its bean definitions from `src/main/resources/config.xml`. Try changing either configuration to see how the result changes without changing the business interface.
 
-- Flexible, no recompilation needed
-- Configuration is external to code
+## Project structure
 
-Disadvantages:
-
-- Complex to implement
-- Potential runtime errors
-
-### 3. Spring XML-based Dependency Injection
-
-The class `PresAvecSpringXML` demonstrates DI using Spring XML configuration.
-
-```java
-ApplicationContext context = new ClassPathXmlApplicationContext("config.xml");
-IMetier metier = (IMetier) context.getBean("metier");
+```text
+src/main/java/
+├── dao/          DAO contract and database implementation
+├── ext/          Alternate web service implementation
+├── metier/       Business contract and implementation
+├── config/       Spring annotation configuration
+└── presentation/ Four runnable examples
 ```
 
-Advantages:
+## License
 
-- External configuration
-- No code changes required for dependency changes
-- Well-established pattern
+This project is available under the [MIT License](LICENSE).
 
-Disadvantages:
-
-- XML can be verbose
-- No compile-time safety
-
-### 4. Spring Annotation-based Dependency Injection
-
-The class `PresAvecSpringAnnotations` demonstrates DI using Spring annotations.
-
-```java
-ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-IMetier metier = context.getBean(IMetier.class);
-```
-
-Advantages:
-
-- Less configuration needed
-- Type safety
-- Cleaner code
-
-Disadvantages:
-
-- Requires annotation processing
-- Annotations couple code to Spring framework
-
-## How to Run the Application
-
-To run the application, use one of the following approaches:
-
-1. **Static Injection**:
-
-   ```
-   java presentation.PresentationV1
-   ```
-
-2. **Dynamic Injection**:
-
-   ```
-   java presentation.PresentationV2
-   ```
-
-   (Ensure config.txt is in the classpath)
-
-3. **Spring XML Injection**:
-
-   ```
-   java presentation.PresAvecSpringXML
-   ```
-
-   (Ensure config.xml is in the classpath)
-
-4. **Spring Annotation Injection**:
-   ```
-   java presentation.PresAvecSpringAnnotations
-   ```
-
-## Expected Results
-
-Each mode of dependency injection should produce a calculation result:
-
-- Using `DaoImpl`: Result should be 23 \* 23 = 529
-- Using `DaoImplV2`: Result should be 11 \* 23 = 253
-
-The specific implementation used depends on the injection configuration.
