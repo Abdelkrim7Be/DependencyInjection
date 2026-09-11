@@ -6,8 +6,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class PresAvecSpringXML {
     public static void main(String[] args) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("config.xml");
-        IMetier metier = (IMetier) context.getBean("metier");
-        System.out.println("RESULT : " + metier.calcul());
+        try (ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("config.xml")) {
+            IMetier metier = context.getBean("metier", IMetier.class);
+            System.out.println("RESULT (XML): " + metier.calcul());
+        }
     }
 }
